@@ -44,6 +44,9 @@ export default StyleSheet.create({
     fontSize: 20,
     marginTop: 10
   },
+  gameinfoBold: {
+    fontWeight: 'bold',
+  },
   row: {
     marginTop: 20,
     padding: 10
@@ -51,18 +54,24 @@ export default StyleSheet.create({
   flex: {
     flexDirection: "row"
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   button: {
     margin: 30,
     flexDirection: "row",
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#2c3e50",
     width: 150,
+    borderWidth: 1,
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center'
   },
   buttonText: {
-    color:"#2B2B52",
+    color:'#f39c12',
     fontSize: 20
   }
 });

@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import {
   Text,
@@ -19,6 +20,7 @@ import {
   MAX_SPOT,
   BONUS_POINTS_LIMIT,
   BONUS_POINTS,
+  SCOREBOARD_KEY,
 } from "../constants/Game";
 
 export default Home = ({ navigation }) => {
@@ -30,6 +32,16 @@ export default Home = ({ navigation }) => {
       setHasPlayerName(true);
       Keyboard.dismiss();
       console.log("Player name:", value);
+
+      // try {
+      //   const playerData = {
+      //     playerName: value,
+      //     sum: 0,
+      //   };
+      //   await AsyncStorage.setItem(SCOREBOARD_KEY, JSON.stringify(playerData));
+      // } catch (e) {
+      //   console.log(e);
+      // }
     } else {
       Alert.alert("Player name is required!");
     }
@@ -37,7 +49,7 @@ export default Home = ({ navigation }) => {
 
   if (hasPlayerName === false) {
     return (
-      <View>
+      <View style={styles.container}>
         <Header />
         <TextInput
           style={styles.gameinfo}
@@ -62,50 +74,51 @@ export default Home = ({ navigation }) => {
     );
   } else {
     return (
-      <View>
+      <View style={styles.container}>
         <ScrollView>
-        <Header />
-        <View style={styles.gameboard}>
-          <MaterialCommunityIcons
-            name="dice-multiple-outline"
-            size={100}
-          ></MaterialCommunityIcons>
-        </View>
-        <Text style={[styles.gameinfo, styles.gameinfoBold]}>
-          Rules of the game
-        </Text>
-        <Text style={styles.row}>
-          THE GAME: Upper section of the classic Yahtzee dice game. You have{" "}
-          {NBR_OF_DICES} dices and for the every dice you have {NBR_OF_THROWS}
-          throws. After each throw you can keep dices in order to get same dice
-          spot counts as many as possible. In the end of the turn you must
-          select your points from {MIN_SPOT} to {MAX_SPOT}. Game ends when all
-          points have been selected. The order for selecting those is free.
-        </Text>
-        <Text style={styles.row}>
-          POINTS: After each turn game calculates the sum for the dices you
-          selected. Only the dices having the same spot count are calculated.
-          Inside the game you can not select same points from
-          {MIN_SPOT} to {MAX_SPOT} again.
-        </Text>
-        <Text style={styles.row}>
-          GOAL: To get points as much as possible.
-          {BONUS_POINTS_LIMIT} points is the limit of getting bonus which gives
-          you {BONUS_POINTS}
-          points more.
-        </Text>
-        <Text style={[styles.gameinfo, styles.gameinfoBold]}>
-          Good luck {playerName}!
-        </Text>
-        <View style={styles.buttonContainer}>
-          <Pressable 
-          style={styles.button}
-          onPress={() => navigation.navigate("Gameboard" , {playerName})}
-          >
-            <Text style={styles.buttonText}>PLAY</Text>
-          </Pressable>
-        </View>
-        <Footer />
+          <Header />
+          <View style={styles.gameboard}>
+            <MaterialCommunityIcons
+              name="dice-multiple-outline"
+              size={100}
+            ></MaterialCommunityIcons>
+          </View>
+          <Text style={[styles.gameinfo, styles.gameinfoBold]}>
+            Rules of the game
+          </Text>
+          <Text style={styles.row}>
+            THE GAME: Upper section of the classic Yahtzee dice game. You have{" "}
+            {NBR_OF_DICES} dices and for the every dice you have{" "}{NBR_OF_THROWS}
+            throws. After each throw you can keep dices in order to get same
+            dice spot counts as many as possible. In the end of the turn you
+            must select your points from {MIN_SPOT} to {MAX_SPOT}. Game ends
+            when all points have been selected. The order for selecting those is
+            free.
+          </Text>
+          <Text style={styles.row}>
+            POINTS: After each turn game calculates the sum for the dices you
+            selected. Only the dices having the same spot count are calculated.
+            Inside the game you can not select same points from
+            {" "}{MIN_SPOT} to {MAX_SPOT} again.
+          </Text>
+          <Text style={styles.row}>
+            GOAL: To get points as much as possible.
+            {BONUS_POINTS_LIMIT} points is the limit of getting bonus which
+            gives you {BONUS_POINTS}
+            points more.
+          </Text>
+          <Text style={[styles.gameinfo, styles.gameinfoBold]}>
+            Good luck {playerName}!
+          </Text>
+          <View style={styles.buttonContainer}>
+            <Pressable
+              style={styles.button}
+              onPress={() => navigation.navigate("Gameboard", { playerName: playerName })}
+            >
+              <Text style={styles.buttonText}>PLAY</Text>
+            </Pressable>
+          </View>
+          <Footer />
         </ScrollView>
       </View>
     );

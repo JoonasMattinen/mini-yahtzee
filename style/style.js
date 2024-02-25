@@ -2,8 +2,8 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#2c3e50'
+    flex: 1, 
+    backgroundColor: '#f39c12', 
   },
   header: {
     marginTop: 30,
@@ -33,12 +33,10 @@ export default StyleSheet.create({
     margin: 10,
   },
   gameboard: {
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
   },
   gameinfo: {
-    backgroundColor: '#fff',
     textAlign: 'center',
     justifyContent: 'center',
     fontSize: 20,
@@ -52,7 +50,7 @@ export default StyleSheet.create({
     padding: 10
   },
   flex: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -73,5 +71,5 @@ export default StyleSheet.create({
   buttonText: {
     color:'#f39c12',
     fontSize: 20
-  }
+  },
 });

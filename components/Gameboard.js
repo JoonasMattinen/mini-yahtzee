@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Text, View, Pressable } from "react-native";
+import { Text, View, Pressable, DeviceEventEmitter } from "react-native";
 import styles from "../style/style";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -11,8 +11,9 @@ import {
   MIN_SPOT,
   MAX_SPOT,
   BONUS_POINTS_LIMIT,
-  BONUS_POINTS,
+  BONUS_POINT,
   SCOREBOARD_KEY,
+  MAX_NBR_OF_SCOREBOARD_ROWS,
 } from "../constants/Game";
 
 let board = [];
@@ -23,6 +24,7 @@ export default Gameboard = ({ route }) => {
   const [status, setStatus] = useState("Throw dices!");
   const [playerName, setPlayerName] = useState("");
   const [isGameEnded, setIsGameEnded] = useState(false);
+  const [scores, setScores] = useState([]);
   const [selectedDices, setSelectedDices] = useState(
     new Array(NBR_OF_DICES).fill(false)
   );
@@ -57,7 +59,7 @@ export default Gameboard = ({ route }) => {
   // row for spots
   const Spot = ({ index }) => {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { alignItems: "center" }]}>
         <Text style={styles.spotText}>{selectedSpotTotals[index - 1]}</Text>
         <Pressable onPress={() => selectSpot(index)}>
           <MaterialCommunityIcons
@@ -69,40 +71,43 @@ export default Gameboard = ({ route }) => {
       </View>
     );
   };
-
+  
   const spots = [];
   for (let i = 1; i <= MAX_SPOT; i++) {
     spots.push(<Spot key={i} index={i} />);
   }
-
+  //useeffect to get playername from input and get data from asyncstorage on mount
   useEffect(() => {
     if (route.params?.playerName) {
       setPlayerName(route.params.playerName);
+      getData();
     }
   }, []);
-
+  //useeffect to keep track of selected spots and calculate the sum
   useEffect(() => {
-    // Call storeData only if sum is updated and the game has ended
-    if (isGameEnded) {
-      storeData();
-    }
-  }, [sum, isGameEnded]);
 
+    const newSum = selectedSpotTotals.reduce((a, b) => a + b, 0);
+    setSum(newSum);
+
+    if (selectedSpots.every((selected) => selected)) {
+      setIsGameEnded(true);
+      setStatus("Game ended!");
+
+      const finalSum = newSum >= BONUS_POINTS_LIMIT ? newSum + BONUS_POINT : newSum;
+      storeData(finalSum);
+    }
+  }, [selectedSpotTotals, selectedSpots]);
 
   function getDiceColor(i) {
-    if (board.every((val, i, arr) => val === arr[0])) {
-      return "#c00000"; //reddish;
-    } else {
-      return selectedDices[i] ? "#346751" /*green*/ : "#2c3e50" /*black*/;
-    }
+    return selectedDices[i] ? "#346751" : "#2c3e50";
   }
-
+  // function to select dices
   const selectDice = (i) => {
     let dices = [...selectedDices];
     dices[i] = selectedDices[i] ? false : true;
     setSelectedDices(dices);
   };
-
+  // function for throwing dices
   const throwDices = () => {
     for (let i = 0; i < NBR_OF_DICES; i++) {
       if (!selectedDices[i]) {
@@ -110,6 +115,7 @@ export default Gameboard = ({ route }) => {
         board[i] = "dice-" + randomNumber + "-outline";
       }
     }
+
     const updatedThrowsLeft = nbrOfThrowsLeft - 1;
     setNbrOfThrowsLeft(updatedThrowsLeft);
 
@@ -119,7 +125,7 @@ export default Gameboard = ({ route }) => {
       setStatus("Select your points before next throw!");
     }
   };
-
+  //function to select spot
   const selectSpot = (spot) => {
     if (nbrOfThrowsLeft > 0) {
       setStatus("Throw 3 times before setting points");
@@ -150,7 +156,7 @@ export default Gameboard = ({ route }) => {
     setSelectedSpots(updatedLockedSpots);
     checkGameEnd(updatedLockedSpots);
   };
-
+  // function to check if game ended
   const checkGameEnd = (updatedLockedSpots) => {
     const allSpotsSelected = updatedLockedSpots.every((selected) => selected);
     if (allSpotsSelected) {
@@ -159,20 +165,46 @@ export default Gameboard = ({ route }) => {
     }
   };
 
-  const storeData = async () => {
+  const getData = async () => {
     try {
-      const playerData = {
-        playerName: playerName,
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-        sum: sum,
-      };
-      await AsyncStorage.setItem(SCOREBOARD_KEY, JSON.stringify(playerData));
+      const jsonValue = await AsyncStorage.getItem(SCOREBOARD_KEY);
+      if (jsonValue !== null) {
+        let Scores = JSON.parse(jsonValue);
+        Scores.sort((a, b) => b.sum - a.sum);
+        setScores(Scores);
+      }
     } catch (error) {
       console.log(error);
     }
   };
+  // function to store data
+  const storeData = async (finalSum) => {
+    const hour = new Date().getHours().toString().padStart(2, "0");
+    const minute = new Date().getMinutes().toString().padStart(2, "0");
 
+    try {
+      const newScore = {
+        playerName: playerName,
+        date: new Date().toLocaleDateString(),
+        time: hour + ":" + minute,
+        sum: finalSum,
+      };
+
+      const jsonValue = await AsyncStorage.getItem(SCOREBOARD_KEY);
+      let scores = jsonValue ? JSON.parse(jsonValue) : [];
+      scores.push(newScore);
+      scores.sort((a, b) => b.sum - a.sum);
+      scores = scores.slice(0, MAX_NBR_OF_SCOREBOARD_ROWS);
+
+      await AsyncStorage.setItem(SCOREBOARD_KEY, JSON.stringify(scores));
+      setScores(scores);
+      DeviceEventEmitter.emit("scoreboardUpdated");
+    } catch (error) {
+      console.error("Error storing the data:", error);
+    }
+  };
+
+  //reset game function
   const resetGame = () => {
     setNbrOfThrowsLeft(NBR_OF_THROWS);
     setSum(0);
@@ -221,9 +253,9 @@ export default Gameboard = ({ route }) => {
       )}
       <Text style={[styles.gameinfo, styles.gameinfoBold]}>Total: {sum}</Text>
       <Text style={styles.gameinfo}>
-        {sum > 63
-          ? `Congratulations! Bonus points ${BONUS_POINTS} added!`
-          : `You are ${64 - sum} points away from the bonus!`}
+        {sum >= BONUS_POINTS_LIMIT
+          ? `Congratulations! Bonus points ${BONUS_POINT} added!`
+          : `You are ${BONUS_POINTS_LIMIT - sum} points away from the bonus!`}
       </Text>
       <Text style={[styles.gameinfo, styles.gameinfoBold]}>
         Player: {playerName}

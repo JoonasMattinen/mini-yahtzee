@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import {
   Text,
@@ -32,80 +31,59 @@ export default Home = ({ navigation }) => {
       setHasPlayerName(true);
       Keyboard.dismiss();
       console.log("Player name:", value);
-
-      // try {
-      //   const playerData = {
-      //     playerName: value,
-      //     sum: 0,
-      //   };
-      //   await AsyncStorage.setItem(SCOREBOARD_KEY, JSON.stringify(playerData));
-      // } catch (e) {
-      //   console.log(e);
-      // }
     } else {
       Alert.alert("Player name is required!");
     }
   };
 
-  if (hasPlayerName === false) {
-    return (
-      <View style={styles.container}>
-        <Header />
-        <TextInput
-          style={styles.gameinfo}
-          value={playerName}
-          onChangeText={setPlayerName}
-          placeholder="Enter your name..."
-          returnKeyType="done"
-        ></TextInput>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.button}
-            title="Start Game"
-            onPress={() => {
-              handlePlayerName(playerName);
-            }}
-          >
-            <Text style={styles.buttonText}>OK</Text>
-          </Pressable>
-        </View>
-        <Footer style={styles.author} />
+  return (
+    <View style={styles.container}>
+      <Header />
+      <View style={styles.gameboard}>
+        <MaterialCommunityIcons name="dice-multiple-outline" size={100} />
       </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <ScrollView>
-          <Header />
-          <View style={styles.gameboard}>
-            <MaterialCommunityIcons
-              name="dice-multiple-outline"
-              size={100}
-            ></MaterialCommunityIcons>
+      {!hasPlayerName ? (
+        <>
+          <TextInput
+            style={styles.gameinfo}
+            value={playerName}
+            onChangeText={setPlayerName}
+            placeholder="Enter your name..."
+            returnKeyType="done"
+          />
+          <View style={styles.buttonContainer}>
+            <Pressable
+              style={styles.button}
+              onPress={() => handlePlayerName(playerName)}
+            >
+              <Text style={styles.buttonText}>OK</Text>
+            </Pressable>
           </View>
+        </>
+      ) : (
+        <ScrollView>
           <Text style={[styles.gameinfo, styles.gameinfoBold]}>
             Rules of the game
           </Text>
           <Text style={styles.row}>
             THE GAME: Upper section of the classic Yahtzee dice game. You have{" "}
-            {NBR_OF_DICES} dices and for the every dice you have{" "}{NBR_OF_THROWS}
-            throws. After each throw you can keep dices in order to get same
-            dice spot counts as many as possible. In the end of the turn you
-            must select your points from {MIN_SPOT} to {MAX_SPOT}. Game ends
-            when all points have been selected. The order for selecting those is
+            {NBR_OF_DICES} dices and for each dice, you have {NBR_OF_THROWS}{" "}
+            throws. After each throw, you can keep dices to get as many of the
+            same dice spot counts as possible. At the end of the turn, you must
+            select your points from {MIN_SPOT} to {MAX_SPOT}. The game ends when
+            all points have been selected. The order for selecting those is
             free.
           </Text>
           <Text style={styles.row}>
-            POINTS: After each turn game calculates the sum for the dices you
-            selected. Only the dices having the same spot count are calculated.
-            Inside the game you can not select same points from
-            {" "}{MIN_SPOT} to {MAX_SPOT} again.
+            POINTS: After each turn, the game calculates the sum of the dices
+            you selected. Only the dices with the same spot count are
+            calculated. You cannot select the same points from {MIN_SPOT} to{" "}
+            {MAX_SPOT} again inside the game.
           </Text>
           <Text style={styles.row}>
-            GOAL: To get points as much as possible.
-            {BONUS_POINTS_LIMIT} points is the limit of getting bonus which
-            gives you {BONUS_POINTS}
-            points more.
+            GOAL: To get as many points as possible. Reaching{" "}
+            {BONUS_POINTS_LIMIT} points is the threshold for receiving a bonus
+            of {BONUS_POINTS} points.
           </Text>
           <Text style={[styles.gameinfo, styles.gameinfoBold]}>
             Good luck {playerName}!
@@ -113,14 +91,14 @@ export default Home = ({ navigation }) => {
           <View style={styles.buttonContainer}>
             <Pressable
               style={styles.button}
-              onPress={() => navigation.navigate("Gameboard", { playerName: playerName })}
+              onPress={() => navigation.navigate("Gameboard", { playerName })}
             >
               <Text style={styles.buttonText}>PLAY</Text>
             </Pressable>
           </View>
-          <Footer />
         </ScrollView>
-      </View>
-    );
-  }
+      )}
+      <Footer style={styles.author} />
+    </View>
+  );
 };

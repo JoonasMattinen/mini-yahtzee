@@ -1,55 +1,75 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Text, View } from "react-native";
+import { Text, View, ScrollView, Pressable, DeviceEventEmitter } from "react-native";
 import Header from "./Header";
 import Footer from "./Footer";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import styles from "../style/style";
 import { useEffect, useState } from "react";
-import { SCOREBOARD_KEY } from "../constants/Game";
+import { SCOREBOARD_KEY, MAX_NBR_OF_SCOREBOARD_ROWS } from "../constants/Game";
 
 export default Scoreboard = () => {
+  const [scores, setScores] = useState([]);
 
-  const [playerName, setPlayerName] = useState("");
-  const [sum, setSum] = useState(0);
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-
+  // Get data from storage
   useEffect(() => {
-    const getStoredData = async () => {
+    const getData = async () => {
       try {
-        const serializedPlayerData = await AsyncStorage.getItem(SCOREBOARD_KEY);
-        if (serializedPlayerData !== null) {
-          // Parse the string back into an object
-          const playerData = JSON.parse(serializedPlayerData);
-          console.log("Retrieved player data:", playerData);
+        const jsonValue = await AsyncStorage.getItem(SCOREBOARD_KEY);
+        if (jsonValue !== null) {
+          let tmpScores = JSON.parse(jsonValue);
+          tmpScores.sort((a, b) => b.sum - a.sum);
 
-          // You can now access playerName and score like this:
-          console.log("Player name:", playerData.playerName);
-          console.log("Sum:", playerData.sum);
-          setPlayerName(playerData.playerName);
-          setSum(playerData.sum);
-          setDate(playerData.date);
-          setTime(playerData.time);
+          tmpScores = tmpScores.slice(0, MAX_NBR_OF_SCOREBOARD_ROWS);
+          setScores(tmpScores);
         }
-      } catch (e) {
-        console.log(e);
+      } catch (error) {
+        console.error("Failed to fetch scores", error);
       }
     };
-    getStoredData();
+
+    getData();
+    // Listen for scoreboard updates
+    const subscription = DeviceEventEmitter.addListener('scoreboardUpdated', getData);
+    return () => subscription.remove();
   }, []);
 
+  // Clear scoreboard data from storage
+  const resetScoreboard = async () => {
+    try {
+      await AsyncStorage.removeItem(SCOREBOARD_KEY); 
+      setScores([]);
+    } catch (error) {
+      console.error("Error resetting the scoreboard:", error);
+    }
+  };
+
   return (
-    <View>
-      <Header />
-      <View style={styles.gameboard}>
-        <MaterialCommunityIcons
-          name="star-shooting-outline"
-          size={100}
-        ></MaterialCommunityIcons>
-      </View>
-      <Text>Player: {playerName} Date: {date}{time} Score: {sum}</Text>
-      <Footer />
+    <View style={styles.container}>
+      <ScrollView style={{ marginTop: 20 }}>
+        <Header />
+        <View style={styles.gameboard}>
+          <MaterialCommunityIcons
+            name="star-shooting-outline"
+            size={100}
+          ></MaterialCommunityIcons>
+        </View>
+        <Text style={[styles.gameinfo, styles.gameinfoBold]}>TOP 10</Text>
+        <View style={styles.buttonContainer}>
+          <Pressable style={styles.button} onPress={resetScoreboard}>
+            <Text style={styles.buttonText}>Reset Scoreboard</Text>
+          </Pressable>
+        </View>
+        {scores.map((score, index) => (
+          <View key={index} style={[styles.row, { borderBottomWidth: 1 }]}>
+            <Text style={styles.gameinfoBold}>Player: {score.playerName}</Text>
+            <Text style={styles.gameinfoBold}>
+              Date: {score.date}, Time: {score.time}
+            </Text>
+            <Text style={styles.gameinfoBold}>Total Score: {score.sum}</Text>
+          </View>
+        ))}
+        <Footer />
+      </ScrollView>
     </View>
   );
 };
-

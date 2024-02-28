@@ -63,7 +63,7 @@ export default Gameboard = ({ route }) => {
         <Text style={styles.spotText}>{selectedSpotTotals[index - 1]}</Text>
         <Pressable onPress={() => selectSpot(index)}>
           <MaterialCommunityIcons
-            name={`numeric-${index}-circle-outline`}
+            name={`numeric-${index}-box-multiple-outline`}
             size={50}
             color={selectedSpots[index - 1] ? "#346751" : "#2c3e50"}
           />

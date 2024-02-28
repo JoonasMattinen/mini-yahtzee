@@ -229,10 +229,10 @@ export default Gameboard = ({ route }) => {
       ) : (
         <View style={styles.flex}>{row}</View>
       )}
-      <Text style={[styles.gameinfo, styles.gameinfoBold]}>
+      <Text style={[styles.gameinfo, styles.gameinfoBold, styles.customFont]}>
         Throws left: {nbrOfThrowsLeft}
       </Text>
-      <Text style={[styles.gameinfo, styles.gameinfoBold]}>{status}</Text>
+      <Text style={[styles.gameinfo, styles.gameinfoBold,styles.customFont]}>{status}</Text>
       {!isGameEnded && (
         <View style={styles.buttonContainer}>
           <Pressable
@@ -240,24 +240,24 @@ export default Gameboard = ({ route }) => {
             onPress={() => throwDices()}
             disabled={nbrOfThrowsLeft === 0 ? true : false}
           >
-            <Text style={styles.buttonText}>Throw dices</Text>
+            <Text style={[styles.buttonText, styles.customFont]}>Throw dices</Text>
           </Pressable>
         </View>
       )}
       {isGameEnded && (
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={resetGame}>
-            <Text style={styles.buttonText}>Restart Game</Text>
+            <Text style={[styles.buttonText, styles.customFont]}>Restart Game</Text>
           </Pressable>
         </View>
       )}
-      <Text style={[styles.gameinfo, styles.gameinfoBold]}>Total: {sum}</Text>
-      <Text style={styles.gameinfo}>
+      <Text style={[styles.gameinfo, styles.gameinfoBold, styles.customFont]}>Total: {sum}</Text>
+      <Text style={[styles.gameinfo, styles.customFont]}>
         {sum >= BONUS_POINTS_LIMIT
           ? `Congratulations! Bonus points ${BONUS_POINT} added!`
           : `You are ${BONUS_POINTS_LIMIT - sum} points away from the bonus!`}
       </Text>
-      <Text style={[styles.gameinfo, styles.gameinfoBold]}>
+      <Text style={[styles.gameinfo, styles.gameinfoBold, styles.customFont]}>
         Player: {playerName}
       </Text>
       <View style={styles.container}>

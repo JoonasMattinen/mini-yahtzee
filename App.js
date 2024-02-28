@@ -4,10 +4,32 @@ import ScoreBoard from './components/Scoreboard';
 import  { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 
+SplashScreen.preventAutoHideAsync();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+
+  const [fontsloaded, fontError] = useFonts({ 
+    'kodemono': require('./assets/fonts/KodeMono.ttf'),
+   });
+
+   useEffect(() => {
+    async function handleSplashScreen() {
+      if (fontsloaded || fontError) {
+        await SplashScreen.hideAsync();
+      }
+    }
+    handleSplashScreen();
+   }, [fontsloaded, fontError]);
+
+   if (!fontsloaded && !fontError) {
+    return null;
+  }
+
   return(
     <NavigationContainer>
       <Tab.Navigator
@@ -35,6 +57,7 @@ export default function App() {
           },
           tabBarActiveTintColor: '#f39c12',
           tabBarInactiveTintColor: '#f5d6a4',
+          tabBarLabelStyle: { fontFamily: 'kodemono', fontSize: 12},
         })}
       >
         <Tab.Screen name="Home" component={Home} 

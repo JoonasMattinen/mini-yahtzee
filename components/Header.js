@@ -5,7 +5,7 @@ import styles from '../style/style'
 export default function Header() {
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>
+      <Text style={[styles.title, styles.customFont]}>
         Mini-Yahtzee
       </Text>
     </View>

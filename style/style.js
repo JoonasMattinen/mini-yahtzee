@@ -3,7 +3,11 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: '#f39c12', 
+    backgroundColor: '#f39c12',
+  },
+  customFont: {
+    fontFamily: 'kodemono',
+    fontSize: 20,
   },
   header: {
     marginTop: 30,
@@ -40,7 +44,7 @@ export default StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     fontSize: 20,
-    marginTop: 10
+    marginTop: 10,
   },
   gameinfoBold: {
     fontWeight: 'bold',
@@ -58,7 +62,7 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   button: {
-    margin: 30,
+    margin: 20,
     flexDirection: "row",
     padding: 10,
     backgroundColor: "#2c3e50",

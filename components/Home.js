@@ -45,7 +45,7 @@ export default Home = ({ navigation }) => {
       {!hasPlayerName ? (
         <>
           <TextInput
-            style={styles.gameinfo}
+            style={[styles.gameinfo, { fontFamily: 'kodemono' }]}
             value={playerName}
             onChangeText={setPlayerName}
             placeholder="Enter your name..."
@@ -56,16 +56,17 @@ export default Home = ({ navigation }) => {
               style={styles.button}
               onPress={() => handlePlayerName(playerName)}
             >
-              <Text style={styles.buttonText}>OK</Text>
+              <Text style={[styles.buttonText, { fontFamily:'kodemono' }]}>OK</Text>
             </Pressable>
           </View>
         </>
       ) : (
-        <ScrollView>
-          <Text style={[styles.gameinfo, styles.gameinfoBold]}>
+        <ScrollView
+        >
+          <Text style={[styles.gameinfo, styles.gameinfoBold, { fontFamily:'kodemono' }]}>
             Rules of the game
           </Text>
-          <Text style={styles.row}>
+          <Text style={[styles.row, { fontFamily:'kodemono' }]}>
             THE GAME: Upper section of the classic Yahtzee dice game. You have{" "}
             {NBR_OF_DICES} dices and for each dice, you have {NBR_OF_THROWS}{" "}
             throws. After each throw, you can keep dices to get as many of the
@@ -74,18 +75,18 @@ export default Home = ({ navigation }) => {
             all points have been selected. The order for selecting those is
             free.
           </Text>
-          <Text style={styles.row}>
+          <Text style={[styles.row, { fontFamily:'kodemono' }]}>
             POINTS: After each turn, the game calculates the sum of the dices
             you selected. Only the dices with the same spot count are
             calculated. You cannot select the same points from {MIN_SPOT} to{" "}
             {MAX_SPOT} again inside the game.
           </Text>
-          <Text style={styles.row}>
+          <Text style={[styles.row, { fontFamily:'kodemono' }]}>
             GOAL: To get as many points as possible. Reaching{" "}
             {BONUS_POINTS_LIMIT} points is the threshold for receiving a bonus
             of {BONUS_POINTS} points.
           </Text>
-          <Text style={[styles.gameinfo, styles.gameinfoBold]}>
+          <Text style={[styles.gameinfo, styles.gameinfoBold, { fontFamily:'kodemono' }]}>
             Good luck {playerName}!
           </Text>
           <View style={styles.buttonContainer}>
@@ -93,7 +94,7 @@ export default Home = ({ navigation }) => {
               style={styles.button}
               onPress={() => navigation.navigate("Gameboard", { playerName })}
             >
-              <Text style={styles.buttonText}>PLAY</Text>
+              <Text style={[styles.buttonText, { fontFamily:'kodemono' }]}>PLAY</Text>
             </Pressable>
           </View>
         </ScrollView>

@@ -53,19 +53,19 @@ export default Scoreboard = () => {
             size={100}
           ></MaterialCommunityIcons>
         </View>
-        <Text style={[styles.gameinfo, styles.gameinfoBold]}>TOP 10</Text>
+        <Text style={[styles.gameinfo, styles.gameinfoBold, styles.customFont]}>TOP 10</Text>
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={resetScoreboard}>
-            <Text style={styles.buttonText}>Reset Scoreboard</Text>
+            <Text style={[styles.buttonText, styles.customFont]}>Reset Scoreboard</Text>
           </Pressable>
         </View>
         {scores.map((score, index) => (
           <View key={index} style={[styles.row, { borderBottomWidth: 1 }]}>
-            <Text style={styles.gameinfoBold}>Player: {score.playerName}</Text>
-            <Text style={styles.gameinfoBold}>
+            <Text style={[styles.gameinfoBold, styles.customFont]}>Player: {score.playerName}</Text>
+            <Text style={[styles.gameinfoBold, styles.customFont]}>
               Date: {score.date}, Time: {score.time}
             </Text>
-            <Text style={styles.gameinfoBold}>Total Score: {score.sum}</Text>
+            <Text style={[styles.gameinfoBold, styles.customFont]}>Total Score: {score.sum}</Text>
           </View>
         ))}
         <Footer />
